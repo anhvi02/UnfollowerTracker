@@ -57,7 +57,7 @@ def check_and_install(package):
         subprocess.check_call(["pip", "install", package])
 
 # List of required packages
-required_packages = ['webdriver_manager', 'selenium', 'beautifulsoup4', 'bs4',  'getpass']
+required_packages = ['webdriver_manager', 'selenium', 'beautifulsoup4', 'bs4']
 
 # Check and install missing packages
 for package in required_packages:
