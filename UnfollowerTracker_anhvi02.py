@@ -75,7 +75,9 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.common.by import By
+import os
 # ignore warning
 import warnings
 warnings.filterwarnings('ignore')
@@ -95,8 +97,19 @@ if headless_option == 2:
     options.add_argument("--headless")
 
 # OPEN BROWSER
-driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+chrome_install = ChromeDriverManager().install()
+
+folder = os.path.dirname(chrome_install)
+chromedriver_path = os.path.join(folder, "chromedriver.exe")
+
+service = ChromeService(chromedriver_path)
+
+driver = webdriver.Chrome(service=service)
 driver.implicitly_wait(0)
+
+# maximize window
+driver.maximize_window()
+
 print("=== DRIVER SET UP AND BROWSER OPENED ===")
 
 # A FUNCTION TO WAIT FOR ELEMENT TO PRESENT
@@ -164,7 +177,7 @@ object_button_followers.click()
 
 # move to follower list
 sleep(3)
-element_locator_follower_list = (By.CSS_SELECTOR, 'div._aano')
+element_locator_follower_list = (By.CSS_SELECTOR, 'div.xyi19xy.x1ccrb07.xtf3nb5.x1pc53ja.x1lliihq.x1iyjqo2.xs83m0k.xz65tgg.x1rife3k.x1n2onr6')
 wait_for_element(driver, element_locator_follower_list)
 
 object_follower_list = driver.find_element(*element_locator_follower_list)
@@ -173,7 +186,7 @@ action.move_to_element(object_follower_list).perform()
 # scroll through the follower list
 # scrollable object
 sleep(3)
-object_followers_list = driver.find_element(By.CSS_SELECTOR, 'div._aano')
+object_followers_list = driver.find_element(By.CSS_SELECTOR, 'div.xyi19xy.x1ccrb07.xtf3nb5.x1pc53ja.x1lliihq.x1iyjqo2.xs83m0k.xz65tgg.x1rife3k.x1n2onr6')
 
 # start to scroll
 last_ht, height = 0, 1
@@ -190,7 +203,7 @@ soup = BeautifulSoup(html)
 
 # extract users
 current_users = []
-list_followers = list(soup.select('div[class="_aano"] > div > div')[0])
+list_followers = list(soup.select('div[class="xyi19xy x1ccrb07 xtf3nb5 x1pc53ja x1lliihq x1iyjqo2 xs83m0k xz65tgg x1rife3k x1n2onr6"] > div > div')[0])
 for follower in list_followers:
     user = follower.text.replace('Remove','').replace('·','').replace('Follows you','').replace('Follow','')
     current_users.append(user)
@@ -202,6 +215,9 @@ with open(current_users_file_name, "w", encoding="utf-8") as file:
         # Write each name followed by a newline character
         file.write(user + "\n")
 print(f' === CURRENT USERS LIST SAVED SUCCESSFULLY TO {current_users_file_name} ===')
+
+# end session
+driver.quit()
 
 if find_unfollower == 2:
     # SPECIFY UNFOLLOWERS AND NEW FOLLOWERS
